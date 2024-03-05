@@ -1,0 +1,18 @@
+// app global css in SCSS form
+.special-anchor{
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.embeded-video{
+  height: 80vh;
+  width: 100%;
+  border: 0;
+}
+
+
+.swal2-container{
+  z-index: 6000;
+}
