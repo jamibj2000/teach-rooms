@@ -83,7 +83,7 @@ const password = ref("");
 
 function login() {
   api
-    .post("linkanimusphp/index.php", {
+    .post("linkanimusphp/login.php", {
       user: account.value,
       pass: password.value,
       state: 0,
