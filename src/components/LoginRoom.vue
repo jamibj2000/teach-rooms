@@ -49,6 +49,7 @@ import { ref, defineProps, onMounted } from "vue";
 import { api } from "src/boot/axios";
 import Swal from "sweetalert2";
 
+const userData = ref([]);
 const dialog = ref(false);
 const studentsCredentials = ref([
   {
@@ -81,6 +82,10 @@ const loginto = ref(false);
 const account = ref("");
 const password = ref("");
 
+function unPhrase64(incomingData) {
+  return atob(incomingData);
+}
+
 function login() {
   api
     .post("linkanimusphp/login.php", {
@@ -90,27 +95,79 @@ function login() {
     })
     .then((res) => {
       console.log(res.data);
-      Swal.fire({
-        icon: "success",
-        title: "Login exitoso",
-        text: "Bienvenido al sistema",
-        showConfirmButton: false,
-        timer: 1500,
-        willClose: () => {
-          dialog.value = false;
-        },
-      });
-      loginto.value = true;
+      if (res?.data == "" || res?.data == null || res?.data == undefined) {
+        Swal.fire({
+          icon: "error",
+          title: "Sin datos",
+          text: "No se cargaron datos",
+          showConfirmButton: false,
+          timer: 1500,
+          willClose: () => {
+            dialog.value = false;
+          },
+        });
+        return;
+      }
+
+      const desPhrasedData = unPhrase64(res?.data?.DATA);
+      userData.value = desPhrasedData;
+
+      if (res.data.state == "OK") {
+        Swal.fire({
+          icon: "success",
+          title: "Login exitoso",
+          text: "Bienvenido al sistema",
+          showConfirmButton: false,
+          timer: 1500,
+          willClose: () => {
+            dialog.value = false;
+          },
+        });
+        loginto.value = true;
+        localStorage.setItem("username", account.value);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Login fallido",
+          text: "Credenciales incorrectas",
+          showConfirmButton: false,
+          timer: 1500,
+          willClose: () => {
+            dialog.value = true;
+          },
+        });
+      }
       // location.reload();
-      localStorage.setItem("username", account.value);
     })
     .catch((err) => {
       Swal.fire({
         icon: "error",
-        title: "Login fallido",
-        text: "Credenciales incorrectas",
+        title: "Error en el servidor",
+        text: `${err}`,
         showConfirmButton: false,
-        timer: 1500,
+        timer: 5500,
+        willClose: () => {
+          dialog.value = true;
+        },
+      });
+    });
+}
+
+function accesUser(userId) {
+  api
+    .post("linkanimusphp/UserAccess.php", {
+      userId,
+    })
+    .then((res) => {
+      console.log("DATA: ", res.data);
+    })
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Error en el servidor",
+        text: `${err}`,
+        showConfirmButton: false,
+        timer: 5500,
         willClose: () => {
           dialog.value = true;
         },

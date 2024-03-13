@@ -18,10 +18,10 @@
     </q-dialog>
 
     <q-card-section class=""> </q-card-section>
-    <q-card-section class="row">
+    <q-card-section class="row bg-warning">
       <!-- <q-badge> Posición: 1 </q-badge>
       <q-badge> Puntuación: 100 </q-badge> -->
-      <q-btn
+      <!-- <q-btn
         color="white"
         class="bg-primary q-px-lg q-py-sm col-12 col-md-3"
         label="UNIDADES"
@@ -30,44 +30,96 @@
         flat
       >
         <q-tooltip class="bg-white text-primary">Road map</q-tooltip>
-      </q-btn>
-      <q-badge class="q-pa-md q-mx-lg bg-accent col-12 col-md-3">
-        <b>Bienvenido, {{ currentUser }} </b>
+      </q-btn> -->
+      <q-badge class="q-pa-md bg-accent col-12 col-md-3">
+        <b>{{ currentUser ? `Bienvenido, ${currentUser}` : "" }} </b>
       </q-badge>
     </q-card-section>
-    <q-table
-      :dense="$q.screen.lt.md"
-      flat
-      bordered
-      hide-header
-      color="primary"
-      title="Clases virtuales"
-      :rows-per-page-options="[0]"
-      :rows="rows"
-      :columns="columns"
-      row-key="videolink"
+
+    <q-expansion-item
+      expand-separator
+      dense-toggle
+      expand-icon-class="text-white"
+      class="text-white bg-accent"
+      :label="'UNIDADES'"
+      default-opened="true"
     >
-      <template v-slot:body="props">
-        <q-tr :props="props" class="q-tr q-my-lg">
-          <q-td key="videolink" class="row q-my-sm" :props="props">
-            <q-btn
-              :disabled="props.row.videolink.active"
-              :icon="props.row.videolink.active ? 'lock' : 'lock_open'"
-              class="special-anchor col-12 col-md-6"
-              :label="props.row.videolink.title"
-              color="primary"
-              @click="
-                () => {
-                  setVideoMaximized(props.row);
-                  dialog = true;
-                }
-              "
-            >
-            </q-btn>
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
+      asd
+    </q-expansion-item>
+
+    <q-expansion-item
+      expand-separator
+      dense-toggle
+      expand-icon-class="text-white"
+      class="text-white bg-accent"
+      :label="'PUNTAJE'"
+      default-opened="true"
+    >
+      <q-table
+        dense
+        bordered
+        color="primary"
+        :title="`Linkoins ${linkoins}`"
+        :rows-per-page-options="[0]"
+        :rows="rows"
+        :columns="columns"
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td v-for="col in props.cols" :key="col.name" :props="props">
+              <q-card v-if="col.name != 'bestScore'">
+                <q-card-section>{{ col.value }}</q-card-section>
+              </q-card>
+
+              <q-card v-else>
+                <q-card-section class="row">
+                  <q-badge
+                    class="q-pa-sm q-mx-sm"
+                    v-for="(col, index) in col.value"
+                    :key="col.value"
+                  >
+                    {{ col.user_name }}
+                    <span
+                      :class="
+                        index == 0 ? 'bg-warning text-accent' : 'bg-green text-accent'
+                      "
+                      class="q-mx-sm q-pa-sm rounded-borders"
+                      >{{ col.score }}</span
+                    >
+                  </q-badge>
+                </q-card-section>
+              </q-card>
+            </q-td>
+          </q-tr>
+
+          <!-- <q-btn
+                :disabled="props.row.videolink.active"
+                :icon="props.row.videolink.active ? 'lock' : 'lock_open'"
+                class="special-anchor col-12 col-md-6"
+                :label="props.row.videolink.title"
+                color="primary"
+                @click="
+                  () => {
+                    setVideoMaximized(props.row);
+                    dialog = true;
+                  }
+                "
+              >
+          </q-btn> -->
+        </template>
+      </q-table>
+    </q-expansion-item>
+
+    <q-expansion-item
+      expand-separator
+      dense-toggle
+      expand-icon-class="text-white"
+      class="text-white bg-accent"
+      :label="'MATERIAL DE ESTUDIO'"
+      default-opened="true"
+    >
+    </q-expansion-item>
+
     <div class="q-gutter-sm">
       <q-dialog
         v-model="dialog"
@@ -173,7 +225,7 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-      <LoginRoom />
+      <!-- <LoginRoom /> -->
     </div>
   </div>
 </template>
@@ -191,112 +243,129 @@ const textDescription = ref(`Las etiquetas HTML semánticas son etiquetas que de
       Por ejemplo, etiquetas como <header>, <article> y <footer> son etiquetas HTML semánticas. Indican claramente la funcionalidad de su contenido.
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`);
 
+const linkoins = ref(22);
 const columns = [
   {
-    name: "videolink",
+    name: "earnedPoints",
     required: true,
-    label: "Link del video",
+    label: "Puntaje ganado",
+    field: "earnedPoints",
     align: "left",
-    field: (row) => row.videolink,
-    format: (val) => `${val}`,
     sortable: true,
   },
-];
-
-const unidades = [
   {
-    nombreUnidad: "Unidad I - Introducción a la programación",
-    subUnidad: {
-      nombreSubUnidad: "Semanticas de HTML5",
-      actividades: [
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-      ],
-    },
+    name: "bestScore",
+    required: true,
+    label: "Top 3 puntajes",
+    field: "bestScore",
+    align: "left",
+    sortable: true,
   },
   {
-    nombreUnidad: "Unidad I - Introducción a la programación",
-    subUnidad: {
-      nombreSubUnidad: "Semanticas de HTML5",
-      actividades: [
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-      ],
-    },
-  },
-  {
-    nombreUnidad: "Unidad I - Introducción a la programación",
-    subUnidad: {
-      nombreSubUnidad: "Semanticas de HTML5",
-      actividades: [
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-      ],
-    },
+    name: "unityAsignaturesName",
+    required: true,
+    label: "Unidades",
+    field: "unityAsignaturesName",
+    align: "left",
+    sortable: true,
   },
 ];
 
 const rows = ref([
   {
-    videolink: {
-      link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-      title: "Semánticas de HTML5",
-      active: false,
-    },
+    unityAsignaturesName: "TAREAS [UNIDAD I - HTML5 semantics]",
+    earnedPoints: 12,
+    bestScore: [
+      {
+        user_name: "Jamiel Jackson",
+        score: 85,
+      },
+      {
+        user_name: "Jhonatan Hernandez",
+        score: 72,
+      },
+      {
+        user_name: "María Silva",
+        score: 64,
+      },
+    ],
   },
   {
-    videolink: {
-      link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-      title: "Estilos CSS",
-      active: true,
-    },
+    unityAsignaturesName: "UNIDAD I - Styling",
+    earnedPoints: 34,
+    bestScore: [
+      {
+        user_name: "Jamiel Jackson",
+        score: 85,
+      },
+      {
+        user_name: "Jhonatan Hernandez",
+        score: 72,
+      },
+      {
+        user_name: "María Silva",
+        score: 64,
+      },
+    ],
   },
   {
-    videolink: {
-      link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-      title: "Validaciones de formualrios",
-      active: true,
-    },
+    unityAsignaturesName: "ASISTENCIA [UNIDAD I - HTML 5 semantics]",
+    earnedPoints: 10,
+    bestScore: [
+      {
+        user_name: "Jamiel Jackson",
+        score: 85,
+      },
+      {
+        user_name: "Jhonatan Hernandez",
+        score: 72,
+      },
+      {
+        user_name: "María Silva",
+        score: 64,
+      },
+    ],
   },
-  // {
-  //   videolink: {
-  //     link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-  //     title: "Semánticas de HTML5",
-  //     active: true,
-  //   },
-  // },
-  // {
-  //   videolink: {
-  //     link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-  //     title: "Semánticas de HTML5",
-  //     active: true,
-  //   },
-  // },
 ]);
+
+const unidades = [
+  {
+    nombreUnidad: "Material de estudio",
+    subUnidad: {
+      nombreSubUnidad: "Semanticas de HTML5",
+      actividades: [
+        {
+          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+          title: "Semánticas de HTML5",
+          active: false,
+        },
+        {
+          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+          title: "Semánticas de HTML5",
+          active: false,
+        },
+      ],
+    },
+  },
+  {
+    nombreUnidad: "Puntaje",
+    subUnidad: {
+      nombreSubUnidad: "Semanticas de HTML5",
+      actividades: [
+        {
+          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+          title: "Semánticas de HTML5",
+          active: false,
+        },
+        {
+          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+          title: "Semánticas de HTML5",
+          active: false,
+        },
+      ],
+    },
+  },
+];
 
 const columnsF = [
   {
@@ -343,32 +412,32 @@ function setVideoMaximized(rowData) {
 }
 
 onMounted(() => {
-  if (!localStorage.cleaned) {
-    Swal.fire({
-      icon: "info",
-      title: "Actualización pendiente",
-      text: "¡El aplicativo está actualizando sus servicios!",
-      showConfirmButton: false,
-      timer: 4500,
-    }).then((result) => {
-      localStorage.setItem("username", "");
-      localStorage.setItem("cleaned", "false");
-      location.reload();
-    });
-  }
-  rows.value = [];
-  currentUser.value = localStorage.getItem("username") || null;
-  if (currentUser.value) {
-    Swal.fire({
-      icon: "info",
-      title: "No hay permisos",
-      text: "¡No tienes permisos para acceder a los recursos de esta sección!",
-      showConfirmButton: false,
-      timer: 4500,
-      willClose: () => {
-        dialog.value = false;
-      },
-    });
-  }
+  // if (!localStorage.cleaned) {
+  //   Swal.fire({
+  //     icon: "info",
+  //     title: "Actualización pendiente",
+  //     text: "¡El aplicativo está actualizando sus servicios!",
+  //     showConfirmButton: false,
+  //     timer: 4500,
+  //   }).then((result) => {
+  //     localStorage.setItem("username", "");
+  //     localStorage.setItem("cleaned", "false");
+  //     location.reload();
+  //   });
+  // }
+  // rows.value = [];
+  // currentUser.value = localStorage.getItem("username") || null;
+  // if (currentUser.value) {
+  //   Swal.fire({
+  //     icon: "info",
+  //     title: "No hay permisos",
+  //     text: "¡No tienes permisos para acceder a los recursos de esta sección!",
+  //     showConfirmButton: false,
+  //     timer: 4500,
+  //     willClose: () => {
+  //       dialog.value = false;
+  //     },
+  //   });
+  // }
 });
 </script>
