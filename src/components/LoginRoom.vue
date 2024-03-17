@@ -10,9 +10,6 @@
       <q-card class="bg-primary text-white">
         <q-bar>
           <q-space />
-          <!-- <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
-          </q-btn> -->
         </q-bar>
         <q-card-section class="q-pt-lg">
           <div class="text-h6">Rolers School</div>
@@ -112,7 +109,8 @@ function login() {
       const desPhrasedData = unPhrase64(res?.data?.DATA);
       userData.value = desPhrasedData;
 
-      if (res.data.state == "OK") {
+      if (res.data.message.ESTADO == "OK") {
+        onLoggedIn(res.data.DATA);
         Swal.fire({
           icon: "success",
           title: "Login exitoso",
@@ -124,7 +122,7 @@ function login() {
           },
         });
         loginto.value = true;
-        localStorage.setItem("username", account.value);
+        localStorage.setItem("userdata", account.value);
       } else {
         Swal.fire({
           icon: "error",
@@ -153,26 +151,12 @@ function login() {
     });
 }
 
-function accesUser(userId) {
-  api
-    .post("linkanimusphp/UserAccess.php", {
-      userId,
-    })
-    .then((res) => {
-      console.log("DATA: ", res.data);
-    })
-    .catch((err) => {
-      Swal.fire({
-        icon: "error",
-        title: "Error en el servidor",
-        text: `${err}`,
-        showConfirmButton: false,
-        timer: 5500,
-        willClose: () => {
-          dialog.value = true;
-        },
-      });
-    });
+const props = defineProps({
+  onLogin: Function,
+});
+
+function onLoggedIn(data) {
+  props.onLogin(true, data);
 }
 
 function toggleDialog() {
@@ -181,7 +165,7 @@ function toggleDialog() {
 
 onMounted(() => {
   let user = localStorage.getItem("username") || null;
-  if (user) {
+  if (user != null && user != "") {
     dialog.value = false;
   } else {
     dialog.value = true;
