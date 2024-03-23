@@ -13,7 +13,7 @@
       </q-toolbar>
     </q-header>
     <q-card-section>
-      <DashboardPanel />
+      <DashboardPanel :loginAccess="loginAccess" />
     </q-card-section>
 
     <!-- <q-drawer
@@ -94,19 +94,31 @@ const linksList = [
   },
 ];
 
+const loginAccess = ref(false);
+
+function getLoginAccess() {
+  loginAccess.value = localStorage.getItem("loginAccess");
+}
+
 function logout() {
   localStorage.clear();
   Swal.fire({
-    icon: "success",
-    title: "Logout exitoso",
-    text: "Sesión cerrada con exito",
+    icon: "info",
+    title: "Cerrando sesión",
     showConfirmButton: false,
     timer: 1500,
-    willClose: () => {
-      location.reload();
-    },
   }).then((result) => {
-    location.reload();
+    Swal.fire({
+      icon: "success",
+      title: "¡Sesión cerrada con éxito!",
+      showConfirmButton: false,
+      timer: 1500,
+      willClose: () => {
+        location.reload();
+      },
+    }).then((result) => {
+      location.reload();
+    });
   });
 }
 </script>

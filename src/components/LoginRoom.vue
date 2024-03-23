@@ -88,7 +88,6 @@ function login() {
     .post("linkanimusphp/login.php", {
       user: account.value,
       pass: password.value,
-      state: 0,
     })
     .then((res) => {
       console.log(res.data);
@@ -106,10 +105,10 @@ function login() {
         return;
       }
 
-      const desPhrasedData = unPhrase64(res?.data?.DATA);
-      userData.value = desPhrasedData;
+      // const desPhrasedData = unPhrase64(res?.data?.DATA);
+      // userData.value = desPhrasedData;
 
-      if (res.data.message.ESTADO == "OK") {
+      if (res?.data?.message?.ESTADO == "OK") {
         onLoggedIn(res.data.DATA);
         Swal.fire({
           icon: "success",
@@ -123,6 +122,11 @@ function login() {
         });
         loginto.value = true;
         localStorage.setItem("userdata", account.value);
+        localStorage.setItem("token", res?.data?.token);
+        localStorage.setItem("username", res?.data?.DATA?.userName);
+        localStorage.setItem("userRole", res?.data?.DATA?.role);
+        localStorage.setItem("userId", res?.data?.DATA.Id);
+        localStorage.setItem("linkoins", res?.data?.DATA?.linkoins);
       } else {
         Swal.fire({
           icon: "error",
@@ -163,13 +167,35 @@ function toggleDialog() {
   dialog.value = !dialog.value;
 }
 
-onMounted(() => {
-  let user = localStorage.getItem("username") || null;
-  if (user != null && user != "") {
+function logByToken() {
+  if (
+    localStorage.getItem("token") != "" &&
+    localStorage.getItem("token") != null &&
+    localStorage.getItem("token") != undefined
+  ) {
+    api
+      .post("linkanimusphp/LogByToken.php", {
+        token: localStorage.getItem("token"),
+      })
+      .then((res) => {
+        console.log(res.data);
+        if (res?.data?.message.ESTADO == "OK") {
+          localStorage.setItem("userdata", account.value);
+          localStorage.setItem("username", res?.data?.DATA?.userName);
+          localStorage.setItem("userRole", res?.data?.DATA?.role);
+          localStorage.setItem("userId", res?.data?.DATA.Id);
+          localStorage.setItem("linkoins", res?.data?.DATA?.linkoins);
+        }
+      });
+
+    props.onLogin(true);
     dialog.value = false;
   } else {
     dialog.value = true;
   }
+}
+onMounted(() => {
+  logByToken();
 });
 
 //dev-pq64v41kcccfxbtk

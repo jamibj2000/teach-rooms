@@ -60,7 +60,79 @@
         </q-badge>
       </q-card>
     </q-card-section>
+    <q-card>
+      <q-card-section>
+        <input type="text" v-model="classLinkUpload" placeholder="Link de la clase" />
+        <input type="text" v-model="classNameUpload" placeholder="Nombre de la clase" />
+        <q-btn
+          color="white"
+          class="bg-primary q-ml-lg q-px-lg q-py-sm col-12 col-md-3"
+          label="Linkear clase"
+          @click="uploadClasslink()"
+          dense
+          flat
+        >
+          <q-tooltip>Linkear clase</q-tooltip>
+        </q-btn>
+        <q-btn
+          color="white"
+          class="bg-red q-mx-lg q-px-lg q-py-sm col-12 col-md-3"
+          label="Terminar clase"
+          @click="terminateClasslink()"
+          dense
+          flat
+        >
+          <q-tooltip>Linkear clase</q-tooltip>
+        </q-btn>
+      </q-card-section>
+    </q-card>
+    <!-- <q-expansion-item
+      expand-separator
+      dense-toggle
+      expand-icon-class="text-dark"
+      class="text-dark text-bold bg-amber"
+      :label="'HISTORICOS'"
+      :default-opened="false"
+    >
+      <q-table
+        dense
+        bordered
+        color="primary"
+        :rows-per-page-options="[0]"
+        :rows="rowsHistoric"
+        :columns="columnsHistoric"
+        row-key="id"
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td v-for="col in props.cols" :key="col.name" :props="props">
+              <q-card v-if="col.name != 'bestScore'">
+                <q-card-section>{{ col.value }}</q-card-section>
+              </q-card>
 
+              <q-card v-else>
+                <q-card-section class="row">
+                  <q-badge
+                    class="q-pa-sm q-mx-sm"
+                    v-for="(col, index) in col.value"
+                    :key="col.value"
+                  >
+                    {{ col.user_name }}
+                    <span
+                      :class="
+                        index == 0 ? 'bg-warning text-accent' : 'bg-white text-accent'
+                      "
+                      class="q-mx-sm q-pa-sm rounded-borders"
+                      >{{ col.score }}</span
+                    >
+                  </q-badge>
+                </q-card-section>
+              </q-card>
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+    </q-expansion-item> -->
     <q-expansion-item
       expand-separator
       dense-toggle
@@ -137,21 +209,6 @@
               </q-card>
             </q-td>
           </q-tr>
-
-          <!-- <q-btn
-                :disabled="props.row.videolink.active"
-                :icon="props.row.videolink.active ? 'lock' : 'lock_open'"
-                class="special-anchor col-12 col-md-6"
-                :label="props.row.videolink.title"
-                color="primary"
-                @click="
-                  () => {
-                    setVideoMaximized(props.row);
-                    dialog = true;
-                  }
-                "
-              >
-          </q-btn> -->
         </template>
       </q-table>
     </q-expansion-item>
@@ -166,7 +223,7 @@
     >
     </q-expansion-item>
 
-    <div class="q-gutter-sm">
+    <!-- <div class="q-gutter-sm">
       <q-dialog
         v-model="dialog"
         persistent
@@ -272,7 +329,7 @@
         </q-card>
       </q-dialog>
       <LoginRoom :onLogin="onLogin" />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -289,6 +346,8 @@ const userData = ref("");
 const currentUser = ref("Roler");
 const activeClass = ref(false);
 const classLink = ref("https://linkanimus.com/");
+const classLinkUpload = ref("");
+const classNameUpload = ref("");
 const textDescription = ref(`Las etiquetas HTML semánticas son etiquetas que definen el significado del contenido que engloban.
       Por ejemplo, etiquetas como <header>, <article> y <footer> son etiquetas HTML semánticas. Indican claramente la funcionalidad de su contenido.
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`);
@@ -320,6 +379,37 @@ const columns = [
     sortable: true,
   },
 ];
+
+const rowsHistoric = ref([]);
+const columnsHistoric = ref([
+  {
+    name: "username",
+    required: true,
+    label: "Estudiante",
+    align: "left",
+    field: "username",
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "date",
+    required: true,
+    label: "Registros",
+    align: "left",
+    field: "date",
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+  {
+    name: "accType",
+    required: true,
+    label: "Accion",
+    align: "left",
+    field: "accType",
+    format: (val) => `${val}`,
+    sortable: true,
+  },
+]);
 
 const rows = ref([
   {
@@ -448,18 +538,6 @@ const rowsF = ref([
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`,
     },
   },
-  // {
-  //   videolink: "Ice cream sandwich",
-  // },
-  // {
-  //   videolink: "Eclair",
-  // },
-  // {
-  //   videolink: "Cupcake",
-  // },
-  // {
-  //   videolink: "Gingerbread",
-  // },
 ]);
 
 const currentVideo = ref("https://www.youtube.com/embed/WIsjE1RzKNo");
@@ -474,31 +552,115 @@ function decodeUserData(userData) {
   return JSON.parse(atob(atob(userData)));
 }
 
-function onLogin(active, data) {
+function onLogin(active) {
   if (active) {
-    userData.value = decodeUserData(data)[0];
-    setUserData(userData.value);
+    console.log({ localStorage });
+    setTimeout(() => {
+      setUserData();
+      getHistoricUsers();
+    }, 500);
   }
 }
 
-function setUserData(userData) {
-  console.log({ userData });
-  currentUser.value = userData.userName;
-  localStorage.setItem("username", currentUser.value);
-  localStorage.setItem("linkoins", userData.linkoins);
-  linkoins.value = userData.linkoins;
-  accesUser(userData.Id);
+function setUserData() {
+  currentUser.value = localStorage.getItem("username");
+  linkoins.value = localStorage.getItem("linkoins");
+  accesUser(localStorage.getItem("userId"));
 }
 //SELECT * FROM access WHERE DATE_FORMAT(created_at, '%d/%m/%Y') = DATE_FORMAT(CURDATE(), '%d/%m/%Y');
+function terminateClasslink() {}
+
+function uploadClasslink() {
+  if (classLinkUpload.value == "" || classNameUpload.value == "") {
+    Swal.fire({
+      icon: "error",
+      text: "Debes rellenar todos los campos",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    return;
+  }
+  api
+    .post("linkanimusphp/UploadClasslink.php", {
+      classlink: classLinkUpload,
+      className: classNameUpload,
+    })
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Error en el servidor",
+        text: `${err}`,
+        showConfirmButton: false,
+        timer: 5500,
+        willClose: () => {
+          dialog.value = true;
+        },
+      });
+    });
+}
+
+function respData(data) {
+  console.log({ data });
+  if (data.ESTADO == "OK") {
+    Swal.fire({
+      icon: "success",
+      title: "Acceso exitoso",
+      text: `Bienvenido ${data.DATA.userName}`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "Error en el servidor",
+      text: `${data}`,
+      showConfirmButton: false,
+      timer: 5500,
+      willClose: () => {
+        dialog.value = true;
+      },
+    });
+  }
+}
+function getHistoricUsers() {
+  if (
+    localStorage.getItem("token") != "" &&
+    localStorage.getItem("token") != null &&
+    localStorage.getItem("token") != undefined
+  ) {
+    api
+      .post("linkanimusphp/HistoricController.php", {
+        token: localStorage.getItem("token"),
+      })
+      .then((res) => {
+        rowsHistoric.value = res.data.DATA;
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error en el servidor",
+          text: `${err}`,
+          showConfirmButton: false,
+          timer: 5500,
+          willClose: () => {
+            dialog.value = true;
+          },
+        });
+      });
+  }
+}
+
+function historicControl() {}
 
 function accesUser(userId) {
   api
     .post("linkanimusphp/UserAccess.php", {
       userId,
     })
-    .then((res) => {
-      // console.log("DATA: ", res.data);
-    })
+    .then((res) => {})
     .catch((err) => {
       Swal.fire({
         icon: "error",
@@ -519,6 +681,8 @@ onMounted(() => {
   unidades.value = [];
   currentUser.value = localStorage.getItem("username");
   linkoins.value = localStorage.getItem("linkoins");
+  getHistoricUsers();
+  // getAccessUsers();
   // if (!localStorage.cleaned) {
   //   Swal.fire({
   //     icon: "info",
