@@ -1,0 +1,38 @@
+containers
+    div
+    span
+    section
+    main
+    form
+    p
+    b
+    i
+    u
+    q
+    nav
+    ul
+    li
+    strong
+    small
+    big
+    h1-h6
+
+inputs
+    text
+    password
+    number
+    radio
+    checkbox
+    textarea
+    select
+
+outputs
+    img
+    audio
+    video
+    iframe
+
+specials
+    a
+    br
+    hr

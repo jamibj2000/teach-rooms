@@ -31,16 +31,41 @@
       >
         <q-tooltip class="bg-white text-primary">Road map</q-tooltip>
       </q-btn> -->
-      <q-badge class="q-pa-md bg-green col-12 col-md-3">
-        <b>{{ currentUser ? `Bienvenido, ${currentUser}` : "" }} </b>
-      </q-badge>
+      <q-card class="q-pa-md bg-light col-12 col-md-10 row g-2">
+        <q-badge class="q-pa-md bg-dark col-12 col-md-5 row flex-center">
+          <b>{{ currentUser ? `Bienvenido, ${currentUser}` : "" }} </b>
+        </q-badge>
+        <q-badge class="q-pa-md bg-dark col-12 col-md-5 row flex-center">
+          <!-- circle active -->
+          <q-icon
+            name="circle"
+            size="x"
+            :color="!activeClass ? 'green' : 'red'"
+            class="q-mr-sm"
+            style="
+              border: 2px solid white;
+              border-radius: 50%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          />
+          <b class="text-center">
+            <q-badge v-if="!activeClass" class="q-pa-sm bg-white text-accent">
+              {{ `Link de la clase:` }}
+              <span class="text-bold">{{ classLink }}</span>
+            </q-badge>
+            <q-badge v-else class="q-pa-sm bg-accent"> SALA DE CLASES INACTIVA </q-badge>
+          </b>
+        </q-badge>
+      </q-card>
     </q-card-section>
 
     <q-expansion-item
       expand-separator
       dense-toggle
-      expand-icon-class="text-white"
-      class="text-white bg-blue"
+      expand-icon-class="text-dark"
+      class="text-dark text-bold bg-amber"
       :label="'UNIDADES'"
       :default-opened="true"
     >
@@ -49,19 +74,30 @@
         dense-toggle
         :header-inset-level="1"
         :content-inset-level="2"
-        expand-icon-class="text-white"
-        class="text-white bg-green"
+        expand-icon-class="text-dark"
+        class="text-dark bg-white"
         :label="'Unidad I'"
         :default-opened="true"
       >
+        <q-expansion-item
+          expand-separator
+          dense-toggle
+          :header-inset-level="1"
+          :content-inset-level="2"
+          expand-icon-class="text-dark"
+          class="text-dark bg-white"
+          :label="'Unidad I'"
+          :default-opened="true"
+        >
+        </q-expansion-item>
       </q-expansion-item>
     </q-expansion-item>
 
     <q-expansion-item
       expand-separator
       dense-toggle
-      expand-icon-class="text-white"
-      class="text-white bg-blue"
+      expand-icon-class="text-dark"
+      class="text-dark text-bold bg-amber"
       :label="'PUNTAJE'"
       :default-opened="false"
     >
@@ -91,7 +127,7 @@
                     {{ col.user_name }}
                     <span
                       :class="
-                        index == 0 ? 'bg-warning text-accent' : 'bg-green text-accent'
+                        index == 0 ? 'bg-warning text-accent' : 'bg-white text-accent'
                       "
                       class="q-mx-sm q-pa-sm rounded-borders"
                       >{{ col.score }}</span
@@ -123,8 +159,8 @@
     <q-expansion-item
       expand-separator
       dense-toggle
-      expand-icon-class="text-white"
-      class="text-white bg-blue"
+      expand-icon-class="text-dark"
+      class="text-dark text-bold bg-amber"
       :label="'MATERIAL DE ESTUDIO'"
       :default-opened="false"
     >
@@ -199,7 +235,7 @@
                     v-for="(item, index) in unidades"
                     :key="index"
                     dense-toggle
-                    expand-icon-class="text-white"
+                    expand-icon-class="text-dark"
                     class="text-white bg-accent"
                     :label="item.nombreUnidad"
                     :default-opened="index == 0 ? true : false"
@@ -251,11 +287,13 @@ const roadMapActive = ref(false);
 const bar = ref(false);
 const userData = ref("");
 const currentUser = ref("Roler");
+const activeClass = ref(false);
+const classLink = ref("https://linkanimus.com/");
 const textDescription = ref(`Las etiquetas HTML semánticas son etiquetas que definen el significado del contenido que engloban.
       Por ejemplo, etiquetas como <header>, <article> y <footer> son etiquetas HTML semánticas. Indican claramente la funcionalidad de su contenido.
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`);
 
-const linkoins = ref(22);
+const linkoins = ref(0);
 const columns = [
   {
     name: "earnedPoints",
@@ -342,22 +380,31 @@ const rows = ref([
 
 const unidades = [
   {
-    nombreUnidad: "Material de estudio",
-    subUnidad: {
-      nombreSubUnidad: "Semanticas de HTML5",
-      actividades: [
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-        {
-          link: "https://www.youtube.com/embed/V8oOQaVHDcw",
-          title: "Semánticas de HTML5",
-          active: false,
-        },
-      ],
-    },
+    nombreUnidad: "Semanticas de HTML5",
+    subUnidades: [
+      {
+        actividades: [
+          {
+            link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+            title: "Etiquetas HTML5",
+            puntaje: 3,
+            active: true,
+          },
+          {
+            link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+            title: "Estilos CSS",
+            puntaje: 3,
+            active: true,
+          },
+          {
+            link: "https://www.youtube.com/embed/V8oOQaVHDcw",
+            title: "Manejo del DOM",
+            puntaje: 4,
+            active: true,
+          },
+        ],
+      },
+    ],
   },
   {
     nombreUnidad: "Puntaje",
@@ -442,6 +489,7 @@ function setUserData(userData) {
   linkoins.value = userData.linkoins;
   accesUser(userData.Id);
 }
+//SELECT * FROM access WHERE DATE_FORMAT(created_at, '%d/%m/%Y') = DATE_FORMAT(CURDATE(), '%d/%m/%Y');
 
 function accesUser(userId) {
   api
