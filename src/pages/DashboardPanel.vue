@@ -19,6 +19,7 @@
 
     <q-card-section class=""> </q-card-section>
     <q-card-section class="row">
+      <!-- <img :src="ruta + '/material_1.png'" alt="" /> -->
       <!-- <q-badge> Posición: 1 </q-badge>
       <q-badge> Puntuación: 100 </q-badge> -->
       <!-- <q-btn
@@ -35,8 +36,7 @@
         <q-badge class="q-pa-md bg-dark col-12 col-md-5 row flex-center">
           <b>{{ currentUser ? `Bienvenido, ${currentUser}` : "" }} </b>
         </q-badge>
-        <q-badge class="q-pa-md bg-dark col-12 col-md-5 row flex-center">
-          <!-- circle active -->
+        <!-- <q-badge class="q-pa-md bg-dark col-12 col-md-5 row flex-center">
           <q-icon
             name="circle"
             size="x"
@@ -57,14 +57,25 @@
             </q-badge>
             <q-badge v-else class="q-pa-sm bg-accent"> SALA DE CLASES INACTIVA </q-badge>
           </b>
-        </q-badge>
+        </q-badge> -->
       </q-card>
     </q-card-section>
-    <q-card>
+    <!-- <q-card>
       <q-card-section>
-        <input type="text" v-model="classLinkUpload" placeholder="Link de la clase" />
-        <input type="text" v-model="classNameUpload" placeholder="Nombre de la clase" />
+        <input
+          :disabled="classActiveInputs"
+          type="text"
+          v-model="classLinkUpload"
+          placeholder="Link de la clase"
+        />
+        <input
+          :disabled="classActiveInputs"
+          type="text"
+          v-model="classNameUpload"
+          placeholder="Nombre de la clase"
+        />
         <q-btn
+          :disabled="classActiveInputs"
           color="white"
           class="bg-primary q-ml-lg q-px-lg q-py-sm col-12 col-md-3"
           label="Linkear clase"
@@ -85,7 +96,7 @@
           <q-tooltip>Linkear clase</q-tooltip>
         </q-btn>
       </q-card-section>
-    </q-card>
+    </q-card> -->
     <!-- <q-expansion-item
       expand-separator
       dense-toggle
@@ -165,7 +176,7 @@
       </q-expansion-item>
     </q-expansion-item>
 
-    <q-expansion-item
+    <!-- <q-expansion-item
       expand-separator
       dense-toggle
       expand-icon-class="text-dark"
@@ -211,7 +222,7 @@
           </q-tr>
         </template>
       </q-table>
-    </q-expansion-item>
+    </q-expansion-item> -->
 
     <q-expansion-item
       expand-separator
@@ -223,7 +234,7 @@
     >
     </q-expansion-item>
 
-    <!-- <div class="q-gutter-sm">
+    <div class="q-gutter-sm">
       <q-dialog
         v-model="dialog"
         persistent
@@ -231,7 +242,7 @@
         transition-show="slide-up"
         transition-hide="slide-down"
       >
-        <q-card class="bg-primary text-white">
+        <!-- <q-card class="bg-primary text-white">
           <q-bar class="q-pa-lg">
             <q-space />
             <q-btn
@@ -258,10 +269,10 @@
               </div>
             </div>
           </q-card-section>
-        </q-card>
+        </q-card> -->
       </q-dialog>
 
-      <q-dialog
+      <!-- <q-dialog
         v-model="roadMapActive"
         persistent
         :maximized="maximizedToggle"
@@ -327,15 +338,15 @@
             </div>
           </q-card-section>
         </q-card>
-      </q-dialog>
+      </q-dialog> -->
       <LoginRoom :onLogin="onLogin" />
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script setup>
 import Swal from "sweetalert2";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, defineProps } from "vue";
 import { api } from "src/boot/axios";
 import LoginRoom from "../components/LoginRoom.vue";
 const dialog = ref(false);
@@ -352,6 +363,7 @@ const textDescription = ref(`Las etiquetas HTML semánticas son etiquetas que de
       Por ejemplo, etiquetas como <header>, <article> y <footer> son etiquetas HTML semánticas. Indican claramente la funcionalidad de su contenido.
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`);
 
+const classActiveInputs = ref(true);
 const linkoins = ref(0);
 const columns = [
   {
@@ -539,9 +551,13 @@ const rowsF = ref([
     },
   },
 ]);
-
+// const ruta = ref("https://jamjack.online/linkanimusphp/assets");
 const currentVideo = ref("https://www.youtube.com/embed/WIsjE1RzKNo");
 const currentVideoTitle = ref("Animacion 2D");
+
+const props = defineProps({
+  loginAccess: Boolean,
+});
 
 function setVideoMaximized(rowData) {
   currentVideo.value = rowData.videolink.link;
@@ -582,11 +598,22 @@ function uploadClasslink() {
   }
   api
     .post("linkanimusphp/UploadClasslink.php", {
-      classlink: classLinkUpload,
-      className: classNameUpload,
+      classlink: classLinkUpload.value,
+      className: classNameUpload.value,
     })
     .then((res) => {
       console.log(res.data);
+      if (res?.data?.message?.ESTADO == "OK") {
+        Swal.fire({
+          icon: "success",
+          text: "Clase cargada exitosamente",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        classLinkUpload.value = "";
+        classNameUpload.value = "";
+        classActiveInputs.value = false;
+      }
     })
     .catch((err) => {
       Swal.fire({
@@ -682,33 +709,22 @@ onMounted(() => {
   currentUser.value = localStorage.getItem("username");
   linkoins.value = localStorage.getItem("linkoins");
   getHistoricUsers();
-  // getAccessUsers();
-  // if (!localStorage.cleaned) {
-  //   Swal.fire({
-  //     icon: "info",
-  //     title: "Actualización pendiente",
-  //     text: "¡El aplicativo está actualizando sus servicios!",
-  //     showConfirmButton: false,
-  //     timer: 4500,
-  //   }).then((result) => {
-  //     localStorage.setItem("username", "");
-  //     localStorage.setItem("cleaned", "false");
-  //     location.reload();
-  //   });
-  // }
-  // rows.value = [];
-  // currentUser.value = localStorage.getItem("username") || null;
-  // if (currentUser.value) {
-  //   Swal.fire({
-  //     icon: "info",
-  //     title: "No hay permisos",
-  //     text: "¡No tienes permisos para acceder a los recursos de esta sección!",
-  //     showConfirmButton: false,
-  //     timer: 4500,
-  //     willClose: () => {
-  //       dialog.value = false;
-  //     },
-  //   });
-  // }
+  api
+    .get("linkanimusphp/descargar.php")
+    .then((res) => {
+      console.log({ res });
+    })
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Error en el servidor",
+        text: `${err}`,
+        showConfirmButton: false,
+        timer: 5500,
+        willClose: () => {
+          dialog.value = true;
+        },
+      });
+    });
 });
 </script>

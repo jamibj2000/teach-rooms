@@ -168,6 +168,7 @@ function toggleDialog() {
 }
 
 function logByToken() {
+  console.log({ "token: ": localStorage.getItem("token") });
   if (
     localStorage.getItem("token") != "" &&
     localStorage.getItem("token") != null &&
