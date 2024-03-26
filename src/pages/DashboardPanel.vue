@@ -17,6 +17,8 @@
       </q-card>
     </q-dialog>
 
+    <material-estudio />
+
     <q-card-section class=""> </q-card-section>
     <q-card-section class="row">
       <!-- <img :src="ruta + '/material_1.png'" alt="" /> -->
@@ -349,6 +351,7 @@ import Swal from "sweetalert2";
 import { onMounted, ref, defineProps } from "vue";
 import { api } from "src/boot/axios";
 import LoginRoom from "../components/LoginRoom.vue";
+import MaterialEstudio from "../components/MaterialEstudio.vue";
 const dialog = ref(false);
 const maximizedToggle = ref(true);
 const roadMapActive = ref(false);
