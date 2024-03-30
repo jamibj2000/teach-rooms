@@ -1,5 +1,7 @@
 <template>
   <div class="">
+    <MaterialEstudio :mDialog="materialDialog" :closeDialogMaterial="closeDialog" />
+
     <q-dialog v-model="bar">
       <q-card>
         <q-bar>
@@ -16,8 +18,6 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-
-    <material-estudio />
 
     <q-card-section class=""> </q-card-section>
     <q-card-section class="row">
@@ -234,17 +234,35 @@
       :label="'MATERIAL DE ESTUDIO'"
       :default-opened="false"
     >
+      <q-expansion-item
+        expand-separator
+        dense-toggle
+        :header-inset-level="0"
+        :content-inset-level="1"
+        expand-icon-class="text-dark"
+        class="text-dark bg-white"
+        :label="'Unidad I'"
+        :default-opened="true"
+      >
+        <q-card class="bg-dark text-white row">
+          <q-card-section class="q-pa-md q-ma-sm bg-accent row rounded-borders">
+            <q-btn class="text-white" dense flat @click="materialDialog = true">
+              {{ schemeName }}
+            </q-btn>
+          </q-card-section>
+        </q-card>
+      </q-expansion-item>
     </q-expansion-item>
 
     <div class="q-gutter-sm">
-      <q-dialog
+      <!-- <q-dialog
         v-model="dialog"
         persistent
         :maximized="maximizedToggle"
         transition-show="slide-up"
         transition-hide="slide-down"
-      >
-        <!-- <q-card class="bg-primary text-white">
+      > -->
+      <!-- <q-card class="bg-primary text-white">
           <q-bar class="q-pa-lg">
             <q-space />
             <q-btn
@@ -272,7 +290,7 @@
             </div>
           </q-card-section>
         </q-card> -->
-      </q-dialog>
+      <!-- </q-dialog> -->
 
       <!-- <q-dialog
         v-model="roadMapActive"
@@ -348,11 +366,12 @@
 
 <script setup>
 import Swal from "sweetalert2";
-import { onMounted, ref, defineProps } from "vue";
+import { onMounted, ref, defineProps, watchEffect } from "vue";
 import { api } from "src/boot/axios";
 import LoginRoom from "../components/LoginRoom.vue";
 import MaterialEstudio from "../components/MaterialEstudio.vue";
 const dialog = ref(false);
+const materialDialog = ref(false);
 const maximizedToggle = ref(true);
 const roadMapActive = ref(false);
 const bar = ref(false);
@@ -362,6 +381,7 @@ const activeClass = ref(false);
 const classLink = ref("https://linkanimus.com/");
 const classLinkUpload = ref("");
 const classNameUpload = ref("");
+const schemeName = ref("asdasd");
 const textDescription = ref(`Las etiquetas HTML semánticas son etiquetas que definen el significado del contenido que engloban.
       Por ejemplo, etiquetas como <header>, <article> y <footer> son etiquetas HTML semánticas. Indican claramente la funcionalidad de su contenido.
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`);
@@ -425,6 +445,11 @@ const columnsHistoric = ref([
     sortable: true,
   },
 ]);
+
+function closeDialog(active) {
+  materialDialog.value = active;
+  console.log("asddd: ", materialDialog.value);
+}
 
 const rows = ref([
   {
@@ -703,6 +728,10 @@ function accesUser(userId) {
         },
       });
     });
+}
+
+function showMaterialDialog() {
+  materialDialog.value = true;
 }
 
 onMounted(() => {
