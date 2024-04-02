@@ -96,6 +96,36 @@ const props = defineProps({
   closeDialogMaterial: Function,
 });
 
+function obtainMaterial(materialId) {
+  api
+    .get("linkanimusphp/ObtainMaterial.php", {
+      materialId: materialId,
+    })
+    .then((res) => {
+      console.log({ res });
+      if (res?.data?.message?.ESTADO == "OK") {
+        // Swal.fire({
+        //   icon: "success",
+        //   text: "Clase cargada exitosamente",
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
+      }
+    })
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Error en la petición:",
+        text: `${err}`,
+        showConfirmButton: false,
+        timer: 5500,
+        willClose: () => {
+          dialog.value = true;
+        },
+      });
+    });
+}
+
 watchEffect(() => {
   bar.value = props.mDialog;
 });

@@ -238,16 +238,27 @@
         expand-separator
         dense-toggle
         :header-inset-level="0"
-        :content-inset-level="1"
         expand-icon-class="text-dark"
         class="text-dark bg-white"
-        :label="'Unidad I'"
+        v-for="(sub_pensums, index) in pensum"
+        :key="index"
+        :label="sub_pensums.pensum_nombre"
         :default-opened="true"
       >
         <q-card class="bg-dark text-white row">
-          <q-card-section class="q-pa-md q-ma-sm bg-accent row rounded-borders">
-            <q-btn class="text-white" dense flat @click="materialDialog = true">
-              {{ schemeName }}
+          <q-card-section
+            v-for="sub_pensum in JSON.parse(sub_pensums.sub_pensums)"
+            :key="sub_pensum"
+            class="q-pa-md q-ma-sm bg-accent row rounded-borders"
+          >
+            <q-btn
+              class="text-white"
+              dense
+              flat
+              @click="materialDialog = true"
+              :label="sub_pensum.sub_pensum_nombre"
+            >
+              <!-- <q-tooltip>Material de estudio</q-tooltip> -->
             </q-btn>
           </q-card-section>
         </q-card>
@@ -370,6 +381,7 @@ import { onMounted, ref, defineProps, watchEffect } from "vue";
 import { api } from "src/boot/axios";
 import LoginRoom from "../components/LoginRoom.vue";
 import MaterialEstudio from "../components/MaterialEstudio.vue";
+
 const dialog = ref(false);
 const materialDialog = ref(false);
 const maximizedToggle = ref(true);
@@ -381,7 +393,8 @@ const activeClass = ref(false);
 const classLink = ref("https://linkanimus.com/");
 const classLinkUpload = ref("");
 const classNameUpload = ref("");
-const schemeName = ref("asdasd");
+const pensum = ref([]);
+const schemeName = ref("");
 const textDescription = ref(`Las etiquetas HTML semánticas son etiquetas que definen el significado del contenido que engloban.
       Por ejemplo, etiquetas como <header>, <article> y <footer> son etiquetas HTML semánticas. Indican claramente la funcionalidad de su contenido.
       En cambio, etiquetas como <div> y <span> son ejemplos típicos de elementos HTML no semánticos. Aunque albergan contenido, no indican qué tipo de contenido contienen ni qué función desempeña esa pieza en la página.`);
@@ -448,7 +461,6 @@ const columnsHistoric = ref([
 
 function closeDialog(active) {
   materialDialog.value = active;
-  console.log("asddd: ", materialDialog.value);
 }
 
 const rows = ref([
@@ -614,6 +626,38 @@ function setUserData() {
 //SELECT * FROM access WHERE DATE_FORMAT(created_at, '%d/%m/%Y') = DATE_FORMAT(CURDATE(), '%d/%m/%Y');
 function terminateClasslink() {}
 
+function obtainPensum() {
+  api
+    .get("linkanimusphp/ObtainPensum.php")
+    .then((res) => {
+      if (res?.data?.message?.ESTADO == "OK") {
+        console.log("DATA: ", JSON.parse(res?.data?.DATA[0].sub_pensums));
+        pensum.value = res?.data?.DATA;
+        // Swal.fire({
+        //   icon: "success",
+        //   text: "Clase cargada exitosamente",
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
+        // classLinkUpload.value = "";
+        // classNameUpload.value = "";
+        // classActiveInputs.value = false;
+      }
+    })
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "Error en el servidor",
+        text: `${err}`,
+        showConfirmButton: false,
+        timer: 5500,
+        willClose: () => {
+          dialog.value = true;
+        },
+      });
+    });
+}
+
 function uploadClasslink() {
   if (classLinkUpload.value == "" || classNameUpload.value == "") {
     Swal.fire({
@@ -741,6 +785,7 @@ onMounted(() => {
   currentUser.value = localStorage.getItem("username");
   linkoins.value = localStorage.getItem("linkoins");
   getHistoricUsers();
+  obtainPensum();
   api
     .get("linkanimusphp/descargar.php")
     .then((res) => {
