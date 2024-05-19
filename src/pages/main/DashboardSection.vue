@@ -1,6 +1,5 @@
 <template>
-  <div>
-  </div>
+  <div>  </div>
 </template>
 
 <script setup>
@@ -10,6 +9,6 @@ import Swal from "sweetalert2";
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>
