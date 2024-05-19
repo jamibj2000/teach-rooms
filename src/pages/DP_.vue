@@ -779,6 +779,13 @@ function showMaterialDialog() {
 }
 
 onMounted(() => {
+   api.get("http://localhost:8080/sandbox")
+  .then((res) =>
+    {
+      console.log({ res });
+    })
+  .catch((err) => {});
+
   rowsF.value = [];
   rows.value = [];
   unidades.value = [];

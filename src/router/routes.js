@@ -2,9 +2,17 @@
 const routes = [
   {
     path: '/',
+    component: () => import('pages/wrapper/LandingPage.vue')
+  },
+  {
+    path: '/login',
+    component: () => import('pages/outter/LoginSection.vue')
+  },
+  {
+    path: '/main',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') }
+      { path: 'dashboard', component: () => import('pages/main/DashboardSection.vue') }
     ]
   },
 
@@ -14,10 +22,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
   },
-  {
-    path: '/panel-administrativo',
-    component: () => import('pages/DashboardPanel.vue')
-  }
 ]
 
 export default routes
