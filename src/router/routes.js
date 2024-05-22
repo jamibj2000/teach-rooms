@@ -9,10 +9,11 @@ const routes = [
     component: () => import('pages/outter/LoginSection.vue')
   },
   {
-    path: '/main',
-    component: () => import('layouts/MainLayout.vue'),
+    path: '/panel',
+    component: () => import('layouts/DashboardLayout.vue'),
     children: [
-      { path: 'dashboard', component: () => import('pages/main/DashboardSection.vue') }
+      { path: 'material', component: () => import('src/pages/main/MaterialStudio.vue') },
+      { path: 'clases', component: () => import('src/pages/main/RoomClases.vue') },
     ]
   },
 

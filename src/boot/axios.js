@@ -8,7 +8,7 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 // const api = axios.create({ baseURL: 'http://localhost:8080' })
-const baselocal = 'localhost:8080/'
+const baselocal = 'https://localhost:8080/'
 const baseProduction = 'https://jamjack.online/'
 const api = axios.create({ baseURL: baselocal })
 
