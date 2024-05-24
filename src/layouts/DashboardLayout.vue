@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="hHh lpR fFf" class="backdrop-background bg-accent">
-    <q-header elevated class="bg-cyan text-white">
+  <q-layout view="hHh lpR fFf" class="backdrop-background bg-dark">
+    <q-header elevated class="bg-dark text-white q-pa-md">
         <q-toolbar>
           <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
           <q-toolbar-title>
@@ -13,7 +13,7 @@
         show-if-above
         :width="250"
         :breakpoint="500"
-        class="row flex-center q-pa-sm"
+        class="row flex-center q-pa-sm bg-black"
         bordered>
         <q-scroll-area class="fit">
           <q-list bordered class="rounded-borders">
@@ -25,18 +25,16 @@
               :header-inset-level="0"
               :default-opened="index == 0 ? true : false"
               expand-icon-class="text-dark"
-              class="text-white bg-accent"
+              class="text-white bg-dark"
             >
               <q-card>
-                <q-card-section>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem, eius reprehenderit eos corrupti
-                  commodi magni quaerat ex numquam, dolorum officiis modi facere maiores architecto suscipit iste
-                  eveniet doloribus ullam aliquid.
+                <q-card-section class="text-dark">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                 </q-card-section>
               </q-card>
             </q-expansion-item>
           </q-list>
-        <q-btn label="Cerrar sesión" color="red" class=" full-width" style="bottom: 0; position: absolute">
+        <q-btn label="Cerrar sesión" color="blue" class="text-black full-width" style="bottom: 0; position: absolute">
         </q-btn>
         </q-scroll-area>
       </q-drawer>
@@ -88,7 +86,7 @@ function toggleRightDrawer () {
 }
 
 onMounted(() => {
-  window.open("/", "_self");
+  // window.open("/", "_self");
 });
 </script>
 
@@ -109,4 +107,5 @@ onMounted(() => {
       backdrop-filter: saturate(0%) blur(0px) brightness(20%);
     }
   }
+
 </style>

@@ -25,6 +25,8 @@
             </q-input> -->
             <q-input
               class="col-12 rounded-borders q-ma-sm q-px-lg bg-white"
+              v-model="login__email"
+              type="text"
               placeholder="Correo"
               dense
             >
@@ -35,7 +37,9 @@
 
             <q-input
               class="col-12 rounded-borders q-ma-sm q-px-lg bg-white"
+              v-model="login__password"
               placeholder="Contraseña"
+              type="password"
               dense
             >
               <template v-slot:append>
@@ -46,8 +50,6 @@
           <q-card-section class="row q-pa-md ">
             <!-- <audio v-if="load___Bg_Audio" src="src/assets/audios/Helix-1.mp3" autoplay="true">
             </audio> -->
-
-
             <q-btn class="col-12 text-dark bg-cyan" label="ACCEDER" @click="login()">
             </q-btn>
           </q-card-section>
@@ -62,6 +64,9 @@ import { ref, onMounted, defineProps } from "vue";
 import { api } from "src/boot/axios";
 import Swal from "sweetalert2";
 
+const login__email = ref()
+const login__password = ref()
+
 // const notifications = ref(new Notification("Notificación", { body: "Hola" }));
 const load___Bg_Audio = ref(false)
 const onDialogHide = ref(true)
@@ -72,7 +77,8 @@ function playAudio() {
 function login() {
   api.post("/api/login")
     .then((res) => {
-      window.open("/main", "_self");
+      localStorage.setItem("profileData", JSON.stringify(res.data?.profile || []))
+      window.open("/panel", "_self");
     })
     .catch((err) => {
       Swal.fire({
