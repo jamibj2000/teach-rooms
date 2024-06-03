@@ -1,6 +1,22 @@
 <template>
   <q-layout view="hHh lpR fFf" class="backdrop-background bg-dark">
-    <q-header elevated class="bg-dark text-white q-pa-md">
+    <section class="row flex-center bg-blue" style="height: 100vh">
+      <div class="base-hex-container">
+
+        <div class="base-hex hex-1"></div>
+        <div class="base-hex hex-2"></div>
+        <div class="base-hex hex-3"></div>
+
+        <div class="base-hex"></div>
+
+        <div class="base-hex hex-4"></div>
+        <div class="base-hex hex-5"></div>
+        <div class="base-hex hex-6"></div>
+
+      </div>
+    </section>
+
+    <!-- <q-header elevated class="bg-dark text-white q-pa-md">
         <q-toolbar>
           <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
           <q-toolbar-title>
@@ -42,7 +58,7 @@
         <q-page padding>
           <router-view />
         </q-page>
-      </q-page-container>
+      </q-page-container> -->
     </q-layout>
 </template>
 <script setup>
@@ -91,6 +107,65 @@ onMounted(() => {
 </script>
 
 <style>
+  .base-hex-container{
+    -webkit-user-drag: auto;
+    position: relative;
+    background: #112e5a;
+  }
+
+  .base-hex{
+    width: 70px;
+    height: 120px;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+  }
+
+  .base-hex:after{
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 120px;
+    background: rgba(0, 0, 0);
+    rotate: 120deg;
+  }
+
+  .base-hex:before{
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 120px;
+    background: rgb(0, 0, 0);
+    rotate: 60deg;
+  }
+
+
+  .hex-1{
+    position: absolute;
+  }
+
+  .hex-2{
+    position: absolute;
+  }
+
+  .hex-3{
+    position: absolute;
+  }
+
+  .hex-4{
+    position: absolute;
+  }
+
+  .hex-5{
+    position: absolute;
+  }
+
+  .hex-6{
+    position: absolute;
+  }
+
+
   .backdrop-background {
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: saturate(800%) blur(4px) brightness(0%);
@@ -107,5 +182,7 @@ onMounted(() => {
       backdrop-filter: saturate(0%) blur(0px) brightness(20%);
     }
   }
-
+  .q-drawer--left.q-drawer--bordered{
+   border: transparent;
+  }
 </style>
